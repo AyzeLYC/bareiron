@@ -215,7 +215,7 @@ void handlePacket (int client_fd, int length, int packet_id, int state) {
         // Handle fall damage
         if (on_ground) {
           int16_t damage = player->grounded_y - player->y - 3;
-          if (damage > 0) {
+          if (damage > 0 && (GAMEMODE == 0 || GAMEMODE == 2)) {
             uint8_t block_feet = getBlockAt(player->x, player->y, player->z);
             if (block_feet < B_water || block_feet > B_water + 7) {
               hurtEntity(client_fd, -1, D_fall, damage);
@@ -355,10 +355,10 @@ void handlePacket (int client_fd, int length, int packet_id, int state) {
           uint8_t b_mid = getBlockAt(mob_x, mob_y, mob_z);
           uint8_t b_top = getBlockAt(mob_x, mob_y + 1, mob_z);
           while (mob_y < 255) {
-            if ( // Solid block below, non-solid at feet and above
+            if ( // Solid block below, non-solid(spawnable) at feet and above
               !isPassableBlock(b_low) &&
-              isPassableBlock(b_mid) &&
-              isPassableBlock(b_top)
+              isPassableSpawnBlock(b_mid) &&
+              isPassableSpawnBlock(b_top)
             ) break;
             b_low = b_mid;
             b_mid = b_top;
@@ -427,13 +427,14 @@ void handlePacket (int client_fd, int length, int packet_id, int state) {
       if (state == STATE_PLAY) cs_playerInput(client_fd);
       break;
 
-    case 0x2B: // Player Loaded
+    case 0x2B: { // Player Loaded
       PlayerData *player;
       if (getPlayerData(client_fd, &player)) break;
       // Clear "client loading" flag and fallback timer
       player->flags &= ~0x20;
       player->flagval_16 = 0;
       break;
+    }
 
     case 0x34:
       if (state == STATE_PLAY) cs_setHeldItem(client_fd);

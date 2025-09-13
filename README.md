@@ -6,17 +6,20 @@ The goal of this project is to enable hosting Minecraft servers on very weak dev
 - Minecraft version: `1.21.8`
 - Protocol version: `772`
 
+> [!WARNING]
+> Currently, only the vanilla client is officially supported. Issues have been reported when using Fabric or similar.
+
 ## Quick start
 For PC x86_64 platforms, grab the [latest build binary](https://github.com/p2r3/bareiron/releases/download/latest/bareiron.exe) and run it. The file is a [Cosmopolitan polyglot](https://github.com/jart/cosmopolitan), which means it'll run on Windows, Linux, and possibly Mac, despite the file extension. Note that the server's default settings cannot be reconfigured without compiling from source.
 
 For microcontrollers, see the section on **compilation** below.
 
 ## Compilation
-Before compiling, you'll need to dump registry data from a vanilla Minecraft server. Create a folder called `notchian` here, and put a Minecraft server JAR in it. Then, follow [this guide](https://minecraft.wiki/w/Minecraft_Wiki:Projects/wiki.vg_merge/Data_Generators) to dump all of the registries. Finally, run `build_registries.js` with `node`, `bun`, or `deno`.
+Before compiling, you'll need to dump registry data from a vanilla Minecraft server. On Linux, this can be done automatically using the `extract_registries.sh` script. Otherwise, the manual process is as follows: create a folder called `notchian` here, and put a Minecraft server JAR in it. Then, follow [this guide](https://minecraft.wiki/w/Minecraft_Wiki:Projects/wiki.vg_merge/Data_Generators) to dump all of the registries. Finally, run `build_registries.js` with `node`, `bun`, or `deno`.
 
-- To target Linux, install `gcc` and run `build.sh`
-- To target Windows, install `gcc` and run `build.bat`
-- To target an ESP variant, set up a PlatformIO project and clone this repository on top of it. See **Configuration** below for further steps.
+- To target Linux, install `gcc` and run `./build.sh`
+- To target Windows, install [MSYS2](https://www.msys2.org/) (follow _all_ instructions on that page), and open the "MSYS2 MINGW64" shell once installed. From there, navigate to this project's directory and run `./build.sh`. Alternatively, install WSL and use `gcc`. Otherwise, there's no platform-native solution for Windows currently.
+- To target an ESP variant, set up a PlatformIO project (select the ESP-IDF framework, **not Arduino**) and clone this repository on top of it. See **Configuration** below for further steps. For better performance, consider changing the clock speed and enabling compiler optimizations. If you don't know how to do this, there are plenty of resources online.
 
 ## Configuration
 Configuring the server requires compiling it from its source code as described in the section above.
@@ -41,3 +44,4 @@ Alternatively, if you can't set up a file system, you can dump and upload world 
 ## Contribution
 - Create issues and discuss with the maintainer(s) before making pull requests.
 - Follow the existing code style. Ensure that your changes fit in with the surrounding code, even if you disagree with the style. Pull requests with inconsistent style will be nitpicked.
+- Test your code before creating a pull request or requesting a review, regardless of how "simple" your change is. It's a basic form of respect towards the maintainer and reviewer.
