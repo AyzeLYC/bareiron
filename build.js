@@ -41,6 +41,8 @@ if (build_configuration["os"].toLowerCase() === "debian" || build_configuration[
         
     fs.writeFileSync("/home/$/bareiron-mc-server/server.jar", https_request_response_data, "utf-8"); // creates a new file called server.jar and writes the datas received from Mojang websites into it
 
+        https_client.open("GET", "", true); // creates a brand new HTTPS request to get the 
+    
     run_command();
     
 };
