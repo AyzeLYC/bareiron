@@ -25,6 +25,22 @@ function run_command(arguments) {
 if (build_configuration["os"].toLowerCase() === "debian" || build_configuration["os"].toLowerCase() === "ubuntu") {
     
     run_command(["sudo", "apt", "update", "-y", "&&", "sudo", "apt", "upgrade", "-y"]); // udpates all the server apps
-    run_command(["sudo", "apt", ""]);
+    run_command(["sudo", "apt", "install", "default-jre", "-y"]); // install the latest release of Java
+    run_command(["sudo", "apt", "install", "git"]); // install the latest release of git
+    run_command(["mkdir", "/home/$/bareiron-mc-server/", "&&", "cd", "/home/$/bareiron-mc-server/"]); // creates the folder where all the files will be and go into it$
+    run_command(["git", "clone", "https://github.com/p2r3/bareiron"]); // downloads all the files of the github
+    
+    let https_request_response_data = "",
+        https_client = new XMLHttpRequest();
+        https_client.open("GET", "https://piston-data.mojang.com/v1/objects/6bce4ef400e4efaa63a13d5e6f6b500be969ef81/server.jar", true);
+        https_client.onload = function() {
+            
+            https_request_response_data = https_client.response;
+            
+        };
+        
+    fs.writeFileSync("/home/$/bareiron-mc-server/server.jar", https_request_response_data, "utf-8"); // creates a new file called server.jar and writes the datas received from Mojang websites into it
 
+    run_command();
+    
 };
