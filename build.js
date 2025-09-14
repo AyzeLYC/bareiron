@@ -19,7 +19,7 @@ function run_command(arguments) {
 
         result += data;
         
-    };
+    });
     shell_process.exit();
 
     return result;
