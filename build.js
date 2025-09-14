@@ -49,11 +49,11 @@ if (String(build_configuration["os"]).toLowerCase() === "debian" || String(build
         https_client.open("GET", "https://piston-data.mojang.com/v1/objects/6bce4ef400e4efaa63a13d5e6f6b500be969ef81/server.jar", true);
         https_client.onload = function() {
             
-            server_jar_data = https_client.response;
+            server_jar_data += https_client.response;
             
         };
     
-    fs.writeFileSync(`${config["server_folder"]}/bareiron/notchian/server.jar`, server_jar_data); // creates a new file called server.jar and writes the datas received from Mojang websites into it
+    fs.writeFileSync(`${config["server_folder"]}/bareiron/notchian/server.jar`, server_jar_data, "utf8"); // creates a new file called server.jar and writes the datas received from Mojang websites into it
 
     
     run_command(["sudo", "chmod", "+x", `./extract_registries.sh`]); // makes the extract_registries.sh file usable
