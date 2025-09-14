@@ -53,7 +53,7 @@ if (String(build_configuration["os"]).toLowerCase() === "debian" || String(build
             
         };
     
-    fs.writeFileSync(`${config["server_folder"]}/bareiron/notchian/server.jar`, server_jar_data, "utf8"); // creates a new file called server.jar and writes the datas received from Mojang websites into it
+    fs.writeFileSync(`${config["server_folder"]}/bareiron/notchian/server.jar`, Array(server_jar_data).toString(), "utf8"); // creates a new file called server.jar and writes the datas received from Mojang websites into it
 
     
     run_command(["sudo", "chmod", "+x", `./extract_registries.sh`]); // makes the extract_registries.sh file usable
