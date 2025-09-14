@@ -26,11 +26,12 @@ function run_command(arguments, timeout) {
     
 };
 
-if (build_configuration["os"].toLowerCase() === "debian" || build_configuration["os"].toLowerCase() === "ubuntu") {
+if (String(build_configuration["os"]).toLowerCase() === "debian" || String(build_configuration["os"]).toLowerCase() === "ubuntu") {
     
     run_command(["sudo", "apt", "update", "-y", "&&", "sudo", "apt", "upgrade", "-y"], 15); // udpates all the server apps
 
-    run_command(["sudo", "apt", "install", "openjdk-22-jre-headless", "-y"], 15); // install the latest release of Java
+    run_command("sudo", "apt", "install", "gcc"], 15);
+    run_command(["sudo", "apt", "install", "default-jre", "-y"], 15); // install the latest release of Java
     run_command(["sudo", "apt", "install", "git", "-y"], 15); // install the latest release of git
     
     run_command(["mkdir", "/home/$/bareiron-mc-server/", "&&", "cd", "/home/$/bareiron-mc-server/"], 5); // creates the folder where all the files will be and go into it$
@@ -63,5 +64,7 @@ if (build_configuration["os"].toLowerCase() === "debian" || build_configuration[
     run_command(["sudo", `${config["server_folder"]}/extract_registries.sh`], 60);
 
     run_command(["sudo", "./build.sh"], 30);
+
+    console.log("Your bareiron executable file has been built successfully !");
     
 };
