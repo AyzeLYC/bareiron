@@ -1,5 +1,5 @@
-const fs = require("fs/promises");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 
 // Overrides for block-to-item conversion
 const blockToItemOverrides = {
@@ -77,10 +77,10 @@ async function extractItemsAndBlocks () {
 
   // Block network IDs are defined in their own JSON file
   // The item JSON file doesn't define IDs, we get those from the registries
-  const blockSource = JSON.parse(await fs.readFile(`${__dirname}/notchian/generated/reports/blocks.json`, "utf8"));
+  const blockSource = JSON.parse(fs.readFileSync(`${__dirname}/notchian/generated/reports/blocks.json`, "utf8"));
 
   // Get registry data for extracting item IDs
-  const registriesJSON = JSON.parse(await fs.readFile(`${__dirname}/notchian/generated/reports/registries.json`, "utf8"));
+  const registriesJSON = JSON.parse(fs.readFileSync(`${__dirname}/notchian/generated/reports/registries.json`, "utf8"));
   const itemSource = registriesJSON["minecraft:item"].entries;
   // Retrieve the registry list for blocks too, used later in tags
   const blockRegistrySource = registriesJSON["minecraft:block"].entries;
