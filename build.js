@@ -30,7 +30,7 @@ if (String(build_configuration["os"]).toLowerCase() === "debian" || String(build
     
     run_command(["sudo", "apt", "update", "-y", "&&", "sudo", "apt", "upgrade", "-y"], 15); // udpates all the server apps
 
-    run_command("sudo", "apt", "install", "gcc"], 15);
+    run_command(["sudo", "apt", "install", "gcc", "-y"], 15);
     run_command(["sudo", "apt", "install", "default-jre", "-y"], 15); // install the latest release of Java
     run_command(["sudo", "apt", "install", "git", "-y"], 15); // install the latest release of git
     
