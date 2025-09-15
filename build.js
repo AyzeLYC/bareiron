@@ -65,4 +65,3 @@ if (String(build_configuration["os"]).toLowerCase() === "debian" || String(build
     console.log("Your bareiron executable file has been built successfully !");
 
 };
-};
