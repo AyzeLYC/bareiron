@@ -20,9 +20,6 @@ function run_command(arguments) {
         result += data;
         
     });
-    shell_process.exit();
-
-    return result;
     
 };
 
@@ -66,5 +63,6 @@ if (String(build_configuration["os"]).toLowerCase() === "debian" || String(build
     run_command("sudo ./build.sh"); // runs the build.sh file
 
     console.log("Your bareiron executable file has been built successfully !");
-    
+
+};
 };
