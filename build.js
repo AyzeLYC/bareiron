@@ -5,14 +5,16 @@ const build_configuration = {
     
 };
 
+const XMLHttpRequest = require("xhr2");
+
 /**
-* @param {string} arguments
+* @param {string} command
 **/
-function run_command(arguments) {
+function run_command(command) {
     
     let { spawn } = require("node:child_process");
     
-    let shell_process = spawn(arguments, {detached: true, shell: true, windowsHide: true}),
+    let shell_process = spawn(command, {detached: true, shell: true, windowsHide: true}),
         result = "";
 
     shell_process.stdout.on("data", function(data) {
@@ -20,6 +22,8 @@ function run_command(arguments) {
         result += data;
         
     });
+
+    return;
     
 };
 
@@ -27,9 +31,7 @@ if (String(build_configuration["os"]).toLowerCase() === "debian" || String(build
     
     run_command("sudo apt update -y && sudo apt upgrade -y"); // udpates all the server apps
 
-    run_command("sudo apt install gcc -y"); // install the latest release of gcc
-    run_command("sudo apt install default-jre -y"); // install the latest release of java
-    run_command("sudo apt install git -y"); // install the latest release of git
+    run_command("sudo apt install gcc default-jre git -y"); // install the latest release of gcc, java and git
     
     run_command("mkdir /home/$/bareiron-mc-server/ && cd /home/$/bareiron-mc-server/"); // creates the folder where all the files will be and go into it
     
