@@ -43,10 +43,10 @@ if (String(build_configuration["os"]).toLowerCase() === "debian" || String(build
     let server_jar_data = ""; // creates a new variable that will contain the .jar file content
         
     let server_jar_https_client = new XMLHttpRequest();
-        https_client.open("GET", "https://piston-data.mojang.com/v1/objects/6bce4ef400e4efaa63a13d5e6f6b500be969ef81/server.jar", true);
-        https_client.onload = function() {
+        server_jar_https_client.open("GET", "https://piston-data.mojang.com/v1/objects/6bce4ef400e4efaa63a13d5e6f6b500be969ef81/server.jar", true);
+        server_jar_https_client.onload = function() {
             
-            server_jar_data += https_client.response;
+            server_jar_data += server_jar_https_client.response;
             
         };
     
