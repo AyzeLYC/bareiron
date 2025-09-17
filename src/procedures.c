@@ -368,6 +368,87 @@ void spawnPlayer (PlayerData *player) {
 
 }
 
+// Broadcasts a player's entity metadata (sneak/sprint state) to other players
+void broadcastPlayerMetadata (PlayerData *player) {
+  uint8_t sneaking = (player->flags & 0x04) != 0;
+  uint8_t sprinting = (player->flags & 0x08) != 0;
+
+  uint8_t entity_bit_mask = 0;
+  if (sneaking) entity_bit_mask |= 0x02;
+  if (sprinting) entity_bit_mask |= 0x08;
+
+  int pose = 0;
+  if (sneaking) pose = 5;
+
+  EntityData metadata[] = {
+    {
+      0,               // Index (Entity Bit Mask)
+      0,               // Type (Byte)
+      entity_bit_mask, // Value
+    },
+    {
+      6,    // Index (Pose),
+      21,   // Type (Pose),
+      pose, // Value (Standing)
+    }
+  };
+
+  for (int i = 0; i < MAX_PLAYERS; i ++) {
+    PlayerData* other_player = &player_data[i];
+    int client_fd = other_player->client_fd;
+
+    if (client_fd == -1) continue;
+    if (client_fd == player->client_fd) continue;
+    if (other_player->flags & 0x20) continue;
+
+    sc_setEntityMetadata(client_fd, player->client_fd, metadata, 2);
+  }
+}
+
+// Sends a mob's entity metadata to the given player.
+// If client_fd is -1, broadcasts to all player
+void broadcastMobMetadata (int client_fd, int entity_id) {
+
+  MobData *mob = &mob_data[-entity_id - 2];
+
+  EntityData *metadata;
+  size_t length;
+
+  switch (mob->type) {
+    case 106: // Sheep
+      if (!((mob->data >> 5) & 1)) // Don't send metadata if sheep isn't sheared
+        return;
+
+      metadata = malloc(sizeof *metadata);
+      metadata[0] = (EntityData){
+        17,            // Index (Sheep Bit Mask),
+        0,             // Type (Byte),
+        (uint8_t)0x10, // Value
+      };
+      length = 1;
+
+      break;
+
+    default: return;
+  }
+
+  if (client_fd == -1) {
+    for (int i = 0; i < MAX_PLAYERS; i ++) {
+      PlayerData* player = &player_data[i];
+      client_fd = player->client_fd;
+
+      if (client_fd == -1) continue;
+      if (player->flags & 0x20) continue;
+
+      sc_setEntityMetadata(client_fd, entity_id, metadata, length);
+    }
+  } else {
+    sc_setEntityMetadata(client_fd, entity_id, metadata, length);
+  }
+
+  free(metadata);
+}
+
 uint8_t getBlockChange (short x, uint8_t y, short z) {
   for (int i = 0; i < block_changes_count; i ++) {
     if (block_changes[i].block == 0xFF) continue;
@@ -1307,9 +1388,55 @@ void spawnMob (uint8_t type, short x, uint8_t y, short z, uint8_t health) {
       );
     }
 
+    // Freshly spawned mobs currently don't need metadata updates.
+    // If this changes, uncomment this line.
+    // broadcastMobMetadata(-1, i);
+
     break;
   }
 
+}
+
+void interactEntity (int entity_id, int interactor_id) {
+
+  PlayerData *player;
+  if (getPlayerData(interactor_id, &player)) return;
+
+  MobData *mob = &mob_data[-entity_id - 2];
+
+  switch (mob->type) {
+    case 106: // Sheep
+      if (player->inventory_items[player->hotbar] != I_shears)
+        return;
+
+      if ((mob->data >> 5) & 1) // Check if sheep has already been sheared
+        return;
+
+      mob->data |= 1 << 5; // Set sheared to true
+
+      bumpToolDurability(player);
+
+      #ifdef ENABLE_PICKUP_ANIMATION
+      playPickupAnimation(player, I_white_wool, mob->x, mob->y, mob->z);
+      #endif
+
+      uint8_t item_count = 1 + (fast_rand() & 1); // 1-2
+      givePlayerItem(player, I_white_wool, item_count);
+
+      for (int i = 0; i < MAX_PLAYERS; i ++) {
+        PlayerData* player = &player_data[i];
+        int client_fd = player->client_fd;
+
+        if (client_fd == -1) continue;
+        if (player->flags & 0x20) continue;
+
+        sc_entityAnimation(client_fd, interactor_id, 0);
+      }
+
+      broadcastMobMetadata(-1, entity_id);
+
+      break;
+  }
 }
 
 void hurtEntity (int entity_id, int attacker_id, uint8_t damage_type, uint8_t damage) {
@@ -1389,10 +1516,14 @@ void hurtEntity (int entity_id, int attacker_id, uint8_t damage_type, uint8_t da
         strcpy((char *)recv_buffer + player_name_len, " was slain by ");
         strcpy((char *)recv_buffer + player_name_len + 14, attacker->name);
         recv_buffer[player_name_len + 14 + strlen(attacker->name)] = '\0';
+      } else if (damage_type == D_cactus) {
+        // Killed by being near a cactus
+        strcpy((char *)recv_buffer + player_name_len, " was pricked to death");
+        recv_buffer[player_name_len + 21] = '\0';
       } else {
         // Unknown death reason
         strcpy((char *)recv_buffer + player_name_len, " died");
-        recv_buffer[player_name_len + 4] = '\0';
+        recv_buffer[player_name_len + 5] = '\0';
       }
 
     } else player->health -= effective_damage;
@@ -1502,6 +1633,15 @@ void handleServerTick (int64_t time_since_last_tick) {
     if (block >= B_lava && block < B_lava + 4) {
       hurtEntity(player->client_fd, -1, D_lava, 8);
     }
+    #ifdef ENABLE_CACTUS_DAMAGE
+    // Tick damage from a cactus block if one is under/inside or around the player.
+    if (block == B_cactus ||
+      getBlockAt(player->x + 1, player->y, player->z) == B_cactus ||
+      getBlockAt(player->x - 1, player->y, player->z) == B_cactus ||
+      getBlockAt(player->x, player->y, player->z + 1) == B_cactus ||
+      getBlockAt(player->x, player->y, player->z - 1) == B_cactus
+    ) hurtEntity(player->client_fd, -1, D_cactus, 4);
+    #endif
     // Heal from saturation if player is able and has enough food
     if (player->health >= 20 || player->health == 0) continue;
     if (player->hunger < 18) continue;
@@ -1771,3 +1911,47 @@ void broadcastChestUpdate (int origin_fd, uint8_t *storage_ptr, uint16_t item, u
 
 }
 #endif
+
+ssize_t writeEntityData (int client_fd, EntityData *data) {
+  writeByte(client_fd, data->index);
+  writeVarInt(client_fd, data->type);
+
+  switch (data->type) {
+    case 0: // Byte
+      return writeByte(client_fd, data->value.byte);
+    case 21: // Pose
+      writeVarInt(client_fd, data->value.pose);
+      return 0;
+
+    default: return -1;
+  }
+}
+
+// Returns the networked size of an EntityData entry
+int sizeEntityData (EntityData *data) {
+  int value_size;
+
+  switch (data->type) {
+    case 0: // Byte
+      value_size = 1;
+      break;
+    case 21: // Pose
+      value_size = sizeVarInt(data->value.pose);
+      break;
+
+    default: return -1;
+  }
+
+  return 1 + sizeVarInt(data->type) + value_size;
+}
+
+// Returns the networked size of an array of EntityData entries
+int sizeEntityMetadata (EntityData *metadata, size_t length) {
+  int total_size = 0;
+  for (size_t i = 0; i < length; i ++) {
+    int size = sizeEntityData(&metadata[i]);
+    if (size == -1) return -1;
+    total_size += size;
+  }
+  return total_size;
+}

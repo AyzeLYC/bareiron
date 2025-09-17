@@ -764,6 +764,10 @@ int cs_setPlayerMovementFlags (int client_fd, uint8_t *on_ground) {
 
   *on_ground = readByte(client_fd) & 0x01;
 
+  PlayerData *player;
+  if (!getPlayerData(client_fd, &player))
+    broadcastPlayerMetadata(player);
+
   return 0;
 }
 
@@ -906,6 +910,26 @@ int sc_spawnEntity (
   writeUint16(client_fd, 0);
   writeUint16(client_fd, 0);
   writeUint16(client_fd, 0);
+
+  return 0;
+}
+
+// S->C Set Entity Metadata
+int sc_setEntityMetadata (int client_fd, int id, EntityData *metadata, size_t length) {
+  int entity_metadata_size = sizeEntityMetadata(metadata, length);
+  if (entity_metadata_size == -1) return 1;
+
+  writeVarInt(client_fd, 2 + sizeVarInt(id) + entity_metadata_size);
+  writeByte(client_fd, 0x5C);
+
+  writeVarInt(client_fd, id); // Entity ID
+
+  for (size_t i = 0; i < length; i ++) {
+    EntityData *data = &metadata[i];
+    writeEntityData(client_fd, data);
+  }
+
+  writeByte(client_fd, 0xFF); // End
 
   return 0;
 }
@@ -1155,7 +1179,9 @@ int cs_interact (int client_fd) {
   // Ignore sneaking flag
   recv_all(client_fd, recv_buffer, 1, false);
 
-  if (type == 1) {
+  if (type == 0) { // Interact
+    interactEntity(entity_id, client_fd);
+  } else if (type == 1) { // Attack
     hurtEntity(entity_id, client_fd, D_generic, 1);
   }
 
@@ -1198,6 +1224,8 @@ int cs_playerInput (int client_fd) {
   if (flags & 0x20) player->flags |= 0x04;
   else player->flags &= ~0x04;
 
+  broadcastPlayerMetadata(player);
+
   return 0;
 }
 
@@ -1214,6 +1242,8 @@ int cs_playerCommand (int client_fd) {
   // Handle sprinting
   if (action == 1) player->flags |= 0x08;
   else if (action == 2) player->flags &= ~0x08;
+
+  broadcastPlayerMetadata(player);
 
   return 0;
 }
