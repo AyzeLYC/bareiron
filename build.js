@@ -5,7 +5,8 @@ const build_configuration = {
     
 };
 
-const XMLHttpRequest = require("xhr2");
+const XMLHttpRequest = require("xhr2"),
+      fs = require("node:fs");
 
 /**
 * @param {string} command
