@@ -46,11 +46,13 @@ function run_jar_and_build_server() {
 
     fs.writeFileSync(`${build_configuration["folder"]}/notchian/server.jar`, serverdotjar_data, "utf8");
     
-    run_command(`sudo chmod +x ${build_configuration["folder"]}/extract_registries.sh`); // makes the extract_registries.sh file usable
-    run_command(`sudo chmod +x ${build_configuration["folder"]}/build.sh`); // same as for extract_registries.sh
-    run_command(`java -jar ${build_configuration["folder"]}/notchian/server.jar`); // launches the minecraft server so that all the folders and files get created ( a small verification system could be implemented later on )
-    run_command(`sudo ${build_configuration["folder"]}/extract_registries.sh`); // runs the extract_registries.sh file
-    run_command(`sudo ${build_configuration["folder"]}/build.sh`); // runs the build.sh file
+    run_command(`sudo chmod +x ${__dirname}/extract_registries.sh`); // makes the extract_registries.sh file usable
+    run_command(`sudo chmod +x ${__dirname}/build.sh`); // same as for extract_registries.sh
+    run_command(`java -jar ${__dirname}/notchian/server.jar`); // launches the minecraft server so that all the folders and files get created ( a small verification system could be implemented later on )
+    run_command(`sudo ${__dirname}/extract_registries.sh`); // runs the extract_registries.sh file
+    run_command(`mv ${__dirname}/notchian/generated/data/minecraft/include/registries.h ${__dirname}/include/registries.h`);
+    run_command(`mv ${__dirname}/notchian/generated/data/minecraft/src/registries.c ${__dirname}/src/registries.c`);
+    run_command(`sudo ${__dirname}/build.sh`); // runs the build.sh file
     console.log(`Your bareiron executable file has been built successfully !\n\nCommands logs :\n${commands_logs}`);
     
 };
@@ -112,6 +114,5 @@ if (String(build_configuration["os"]).toLowerCase() === "gentoo") {
     run_command("sudo emerge --update --deep world -y && sudo emerge --upgrade -y");
     run_command("sudo emerge gcc ");
     run_command(`mkdir ${__dirname}/notchian/ ${__dirname}/notchian/generated/ ${__dirname}/notchian/generated/data/ ${__dirname}/notchian/generated/data/minecraft/`);
-    run_command("mv ${__dirname}/notchian/generated/data/minecraft/");
     
 };
