@@ -1,12 +1,14 @@
 const build_configuration = {
 
     "os": "ubuntu",
-    "server_folder": "/home/$/bareiron-mc-server"
+    "server_folder": __dirname
     
 };
 
 const XMLHttpRequest = require("xhr2"),
       fs = require("node:fs");
+
+var commands_logs = [];
 
 /**
 * @param {string} command
@@ -24,20 +26,20 @@ function run_command(command) {
         
     });
 
+    shell_process.kill();
+
+    commands_logs.push(result);
+
     return;
     
 };
 
-if (String(build_configuration["os"]).toLowerCase() === "debian" || String(build_configuration["os"]).toLowerCase() === "ubuntu") {
+if ((String(build_configuration["os"]).toLowerCase() === "debian" || String(build_configuration["os"]).toLowerCase() === "ubuntu") && build_configuration["server_folder"] != __dirname) {
     
     run_command("sudo apt update -y && sudo apt upgrade -y"); // udpates all the server apps
-
     run_command("sudo apt install gcc default-jre git -y"); // install the latest release of gcc, java and git
-    
-    run_command(`cd ${config["server_folder"]}/bareiron`); // go into the newly created bareiron folder
-    
-    run_command(`mkdir ${config["server_folder"]}/notchian/ ${config["server_folder"]}/notchian/generated/ ${config["server_folder"]}/notchian/generated/data/ ${config["server_folder"]}/notchian/generated/data/minecraft`); // creates the necessary compilation folders
-
+    run_command(`cd ${build_configuration["server_folder"]}/bareiron`); // go into the newly created bareiron folder
+    run_command(`mkdir ${build_configuration["server_folder"]}/notchian/ ${build_configuration["server_folder"]}/notchian/generated/ ${build_configuration["server_folder"]}/notchian/generated/data/ ${build_configuration["server_folder"]}/notchian/generated/data/minecraft`); // creates the necessary compilation folders
     
     let server_jar_data = ""; // creates a new variable that will contain the .jar file content
         
@@ -49,18 +51,24 @@ if (String(build_configuration["os"]).toLowerCase() === "debian" || String(build
             
         };
     
-    fs.writeFileSync(`${config["server_folder"]}/bareiron/notchian/server.jar`, server_jar_data, "utf8"); // creates a new file called server.jar and writes the datas received from Mojang websites into it
-
+    fs.writeFileSync(`${build_configuration["server_folder"]}/bareiron/notchian/server.jar`, server_jar_data, "utf8"); // creates a new file called server.jar and writes the datas received from Mojang websites into it
     
-    run_command(`sudo chmod +x ${config["server_folder"]}/extract_registries.sh`); // makes the extract_registries.sh file usable
-    run_command(`sudo chmod +x ${config["server_folder"]}/build.sh`); // same as for extract_registries.sh
+    run_command(`sudo chmod +x ${build_configuration["server_folder"]}/extract_registries.sh`); // makes the extract_registries.sh file usable
+    run_command(`sudo chmod +x ${build_configuration["server_folder"]}/build.sh`); // same as for extract_registries.sh
+    run_command(`java -jar ${build_configuration["server_folder"]}/notchian/server.jar`); // launches the minecraft server so that all the folders and files get created ( a small verification system could be implemented later on )
+    run_command(`sudo ${build_configuration["server_folder"]}/extract_registries.sh`); // runs the extract_registries.sh file
+    run_command(`sudo ${build_configuration["server_folder"]}/build.sh`); // runs the build.sh file
+    console.log(`Your bareiron executable file has been built successfully !\n\nCommands logs :\n${commands_logs}`);
+
+};
+
+if ((String(build_configuration["os"]).toLowerCase() === "debian" || String(build_configuration["os"]).toLowerCase() === "ubuntu") && build_configuration["server_folder"] === __dirname) {
+
+    run_command(`sudo chmod +x ${__dirname}/extract_registries.sh`);
+    run_command(`sudo chmod +x ${__dirname}/build.sh`);
+    run_command(`java -jar ${__dirname}/notchian/server.jar`);
+    run_command(`sudo ${__dirname}/extract_registries.sh`);
+    run_command(`sudo ${__dirname}/build.sh`);
+    console.log(`Your bareiron executable file has been built successfully !\n\nCommands logs :\n${commands_logs}`);
     
-    run_command(`java -jar ${config["server_folder"]}/notchian/server.jar`); // launches the minecraft server so that all the folders and files get created ( a small verification system could be implemented later on )
-    
-    run_command(`sudo ${config["server_folder"]}/extract_registries.sh`); // runs the extract_registries.sh file
-
-    run_command(`sudo ${server_configuration["server_folder"]}/build.sh`); // runs the build.sh file
-
-    console.log("Your bareiron executable file has been built successfully !");
-
 };
