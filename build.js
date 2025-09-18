@@ -1,11 +1,11 @@
 const build_configuration = {
 
-    "os": "ubuntu",
-    "server_folder": __dirname
+    "os": "ubuntu", // change this with the name of your operating system
+    "server_dot_jar_url": ""
     
 };
 
-const XMLHttpRequest = require("xhr2"),
+const XMLHTTPR = require("xhr2"), // XML HyperText Transfer Protocol Request
       fs = require("node:fs");
 
 var commands_logs = [];
@@ -34,41 +34,84 @@ function run_command(command) {
     
 };
 
-if ((String(build_configuration["os"]).toLowerCase() === "debian" || String(build_configuration["os"]).toLowerCase() === "ubuntu") && build_configuration["server_folder"] != __dirname) {
-    
-    run_command("sudo apt update -y && sudo apt upgrade -y"); // udpates all the server apps
-    run_command("sudo apt install gcc default-jre git -y"); // install the latest release of gcc, java and git
-    run_command(`cd ${build_configuration["server_folder"]}/bareiron`); // go into the newly created bareiron folder
-    run_command(`mkdir ${build_configuration["server_folder"]}/notchian/ ${build_configuration["server_folder"]}/notchian/generated/ ${build_configuration["server_folder"]}/notchian/generated/data/ ${build_configuration["server_folder"]}/notchian/generated/data/minecraft`); // creates the necessary compilation folders
-    
-    let server_jar_data = ""; // creates a new variable that will contain the .jar file content
-        
-    let server_jar_https_client = new XMLHttpRequest();
-        server_jar_https_client.open("GET", "https://piston-data.mojang.com/v1/objects/6bce4ef400e4efaa63a13d5e6f6b500be969ef81/server.jar", true);
-        server_jar_https_client.onload = function() {
-            
-            server_jar_data += server_jar_https_client.response;
+function run_jar_and_build_server() {
+
+    let serverdotjar_https_client = new XMLHTTPR();
+        serverdotjar_https_client.open("GET", build_configuration["server_dot_jar_url"], true);
+        serverdotjar_https_client.onload = function() {
+
+            serverdotjar_data += serverdotjar_https_client.response;
             
         };
+
+    fs.writeFileSync(`${build_configuration["folder"]}/notchian/server.jar`, serverdotjar_data, "utf8");
     
-    fs.writeFileSync(`${build_configuration["server_folder"]}/bareiron/notchian/server.jar`, server_jar_data, "utf8"); // creates a new file called server.jar and writes the datas received from Mojang websites into it
-    
-    run_command(`sudo chmod +x ${build_configuration["server_folder"]}/extract_registries.sh`); // makes the extract_registries.sh file usable
-    run_command(`sudo chmod +x ${build_configuration["server_folder"]}/build.sh`); // same as for extract_registries.sh
-    run_command(`java -jar ${build_configuration["server_folder"]}/notchian/server.jar`); // launches the minecraft server so that all the folders and files get created ( a small verification system could be implemented later on )
-    run_command(`sudo ${build_configuration["server_folder"]}/extract_registries.sh`); // runs the extract_registries.sh file
-    run_command(`sudo ${build_configuration["server_folder"]}/build.sh`); // runs the build.sh file
+    run_command(`sudo chmod +x ${build_configuration["folder"]}/extract_registries.sh`); // makes the extract_registries.sh file usable
+    run_command(`sudo chmod +x ${build_configuration["folder"]}/build.sh`); // same as for extract_registries.sh
+    run_command(`java -jar ${build_configuration["folder"]}/notchian/server.jar`); // launches the minecraft server so that all the folders and files get created ( a small verification system could be implemented later on )
+    run_command(`sudo ${build_configuration["folder"]}/extract_registries.sh`); // runs the extract_registries.sh file
+    run_command(`sudo ${build_configuration["folder"]}/build.sh`); // runs the build.sh file
     console.log(`Your bareiron executable file has been built successfully !\n\nCommands logs :\n${commands_logs}`);
+    
+};
+
+var serverdotjar_data = ""; // creates a new variable that will contain the .jar file datas
+
+if (String(build_configuration["os"]).toLowerCase() === "debian" || String(build_configuration["os"]).toLowerCase() === "ubuntu") {
+    
+    run_command("sudo apt update -y && sudo apt upgrade -y"); // udpates all the server apps
+    run_command("sudo apt install gcc default-jre -y"); // install the latest release of gcc and java
+    run_command(`mkdir ${__dirname}/notchian/ ${__dirname}/notchian/generated/ ${__dirname}/notchian/generated/data/ ${__dirname}/notchian/generated/data/minecraft`); // creates the necessary compilation folders
+
+    run_jar_and_build_server();
 
 };
 
-if ((String(build_configuration["os"]).toLowerCase() === "debian" || String(build_configuration["os"]).toLowerCase() === "ubuntu") && build_configuration["server_folder"] === __dirname) {
+if (String(build_configuration["os"]).toLowerCase() === "centos" || String(build_configuration["os"]).toLowerCase() === "fedora" || String(build_configuration["os"]).toLowerCase() === "rhel") {
 
-    run_command(`sudo chmod +x ${__dirname}/extract_registries.sh`);
-    run_command(`sudo chmod +x ${__dirname}/build.sh`);
-    run_command(`java -jar ${__dirname}/notchian/server.jar`);
-    run_command(`sudo ${__dirname}/extract_registries.sh`);
-    run_command(`sudo ${__dirname}/build.sh`);
-    console.log(`Your bareiron executable file has been built successfully !\n\nCommands logs :\n${commands_logs}`);
+    run_command("sudo dnf update -y && sudo dnf upgrade -y");
+    run_command("sudo dnf install gcc default-jre -y");
+    run_command(`mkdir ${__dirname}/notchian/ ${__dirname}/notchian/generated/ ${__dirname}/notchian/generated/data/ ${__dirname}/notchian/generated/data/minecraft/`);
+
+    run_jar_and_build_server();
+    
+};
+
+if (String(build_configuration["os"]).toLowerCase() === "centos-old" || String(build_configuration["os"]).toLowerCase() === "fedora-old" || String(build_configuration["os"]).toLowerCase() === "rhel-old") {
+
+    run_command("sudo yum update -y && sudo yum upgrade -y");
+    run_command("sudo yum install gcc default-jre -y");
+    run_command(`mkdir ${__dirname}/notchian/ ${__dirname}/notchian/generated/ ${__dirname}/notchian/generated/data/ ${__dirname}/notchian/generated/data/minecraft/`);
+
+    run_jar_and_build_server();
+    
+};
+
+if (String(build_configuration["os"]).toLowerCase() === "arch" || String(build_configuration["os"]).toLowerCase() === "msys2") {
+
+    run_command("sudo pacman update -y && sudo pacman upgrade -y");
+    run_command("sudo pacman -S gcc jdk-openjdk -y");
+    run_command(`mkdir ${__dirname}/notchian/ ${__dirname}/notchian/generated/ ${__dirname}/notchian/generated/data/ ${__dirname}/notchian/generated/data/minecraft/`);
+
+    run_jar_and_build_server();
+    
+};
+
+if (String(build_configuration["os"]).toLowerCase() === "opensuse" || String(build_configuration["os"]).toLowerCase() === "suse-enterprise") {
+
+    run_command("sudo zypper update -y && sudo zypper upgrade -y");
+    run_command("sudo zypper install gcc java-17-openjdk-devel -y");
+    run_command(`mkdir ${__dirname}/notchian/ ${__dirname}/notchian/generated/ ${__dirname}/notchian/generated/data/ ${__dirname}/notchian/generated/data/minecraft/`);
+
+    run_jar_and_build_server();
+    
+};
+
+if (String(build_configuration["os"]).toLowerCase() === "gentoo") {
+
+    run_command("sudo emerge --update --deep world -y && sudo emerge --upgrade -y");
+    run_command("sudo emerge gcc ");
+    run_command(`mkdir ${__dirname}/notchian/ ${__dirname}/notchian/generated/ ${__dirname}/notchian/generated/data/ ${__dirname}/notchian/generated/data/minecraft/`);
+    run_command("mv ${__dirname}/notchian/generated/data/minecraft/");
     
 };
