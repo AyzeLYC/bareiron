@@ -38,7 +38,7 @@ function run_jar_and_build_server() {
 
     run_command(`mkdir ${__dirname}/notchian/ ${__dirname}/notchian/generated/ ${__dirname}/notchian/generated/data/ ${__dirname}/notchian/generated/data/minecraft`); // creates the folders neceary for the compilation to work properly
     
-    run_command(`cd ./notchian/ && wget ${build_configuration["server_file_url"]}`);
+    run_command(`cd ${__dirname}/notchian/ && wget ${build_configuration["server_file_url"]}`);
     
     run_command(`sudo chmod +x ${__dirname}/extract_registries.sh`); // makes the extract_registries.sh file usable
     run_command(`sudo chmod +x ${__dirname}/build.sh`); // same as for extract_registries.sh
