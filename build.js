@@ -5,8 +5,7 @@ const build_configuration = {
     
 };
 
-const XMLHTTPR = require("xhr2"), // XML HyperText Transfer Protocol Request
-      fs = require("node:fs");
+const fs = require("node:fs");
 
 var commands_logs = [];
 
