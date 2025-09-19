@@ -36,15 +36,17 @@ function run_command(command) {
 
 function run_jar_and_build_server() {
 
-    let serverdotjar_https_client = new XMLHTTPR();
-        serverdotjar_https_client.open("GET", build_configuration["server_dot_jar_url"], true);
-        serverdotjar_https_client.onload = function() {
+    run_command(`mkdir ${__dirname}/notchian/ ${__dirname}/notchian/generated/ ${__dirname}/notchian/generated/data/ ${__dirname}/notchian/generated/data/minecraft`); // creates the folders neceary for the compilation to work properly
+    
+    let serverdotjar_https_client = new XMLHTTPR(); // creates a new XML HTTP Client
+        serverdotjar_https_client.open("GET", build_configuration["server_dot_jar_url"], true); // connects itself to Mojang servers to pull the server.jar file
+        serverdotjar_https_client.onload = function() { // when the HTTPS client receives datas
 
-            serverdotjar_data += serverdotjar_https_client.response;
+            serverdotjar_data += serverdotjar_https_client.response; // writes the response body
             
         };
 
-    fs.writeFileSync(`${build_configuration["folder"]}/notchian/server.jar`, serverdotjar_data, "utf8");
+    fs.writeFileSync(`${build_configuration["folder"]}/notchian/server.jar`, serverdotjar_data, "utf8"); // creates a new file called server.jar and put the content of the server.jar we received from mojang servers
     
     run_command(`sudo chmod +x ${__dirname}/extract_registries.sh`); // makes the extract_registries.sh file usable
     run_command(`sudo chmod +x ${__dirname}/build.sh`); // same as for extract_registries.sh
@@ -63,9 +65,8 @@ if (String(build_configuration["os"]).toLowerCase() === "debian" || String(build
     
     run_command("sudo apt update -y && sudo apt upgrade -y"); // udpates all the server apps
     run_command("sudo apt install gcc default-jre -y"); // install the latest release of gcc and java
-    run_command(`mkdir ${__dirname}/notchian/ ${__dirname}/notchian/generated/ ${__dirname}/notchian/generated/data/ ${__dirname}/notchian/generated/data/minecraft`); // creates the necessary compilation folders
-
-    run_jar_and_build_server();
+    
+    run_jar_and_build_server(); // launch the build function
 
 };
 
@@ -73,8 +74,7 @@ if (String(build_configuration["os"]).toLowerCase() === "centos" || String(build
 
     run_command("sudo dnf update -y && sudo dnf upgrade -y");
     run_command("sudo dnf install gcc default-jre -y");
-    run_command(`mkdir ${__dirname}/notchian/ ${__dirname}/notchian/generated/ ${__dirname}/notchian/generated/data/ ${__dirname}/notchian/generated/data/minecraft/`);
-
+    
     run_jar_and_build_server();
     
 };
@@ -83,8 +83,7 @@ if (String(build_configuration["os"]).toLowerCase() === "centos-old" || String(b
 
     run_command("sudo yum update -y && sudo yum upgrade -y");
     run_command("sudo yum install gcc default-jre -y");
-    run_command(`mkdir ${__dirname}/notchian/ ${__dirname}/notchian/generated/ ${__dirname}/notchian/generated/data/ ${__dirname}/notchian/generated/data/minecraft/`);
-
+    
     run_jar_and_build_server();
     
 };
@@ -93,8 +92,7 @@ if (String(build_configuration["os"]).toLowerCase() === "arch" || String(build_c
 
     run_command("sudo pacman update -y && sudo pacman upgrade -y");
     run_command("sudo pacman -S gcc jdk-openjdk -y");
-    run_command(`mkdir ${__dirname}/notchian/ ${__dirname}/notchian/generated/ ${__dirname}/notchian/generated/data/ ${__dirname}/notchian/generated/data/minecraft/`);
-
+    
     run_jar_and_build_server();
     
 };
@@ -103,8 +101,7 @@ if (String(build_configuration["os"]).toLowerCase() === "opensuse" || String(bui
 
     run_command("sudo zypper update -y && sudo zypper upgrade -y");
     run_command("sudo zypper install gcc java-17-openjdk-devel -y");
-    run_command(`mkdir ${__dirname}/notchian/ ${__dirname}/notchian/generated/ ${__dirname}/notchian/generated/data/ ${__dirname}/notchian/generated/data/minecraft/`);
-
+    
     run_jar_and_build_server();
     
 };
@@ -113,6 +110,7 @@ if (String(build_configuration["os"]).toLowerCase() === "gentoo") {
 
     run_command("sudo emerge --update --deep world -y && sudo emerge --upgrade -y");
     run_command("sudo emerge gcc ");
-    run_command(`mkdir ${__dirname}/notchian/ ${__dirname}/notchian/generated/ ${__dirname}/notchian/generated/data/ ${__dirname}/notchian/generated/data/minecraft/`);
+
+    run_jar_and_build();
     
 };
