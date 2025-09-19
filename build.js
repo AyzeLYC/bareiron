@@ -1,7 +1,7 @@
 const build_configuration = {
 
     "os": "ubuntu", // change this with the name of your operating system
-    "server_dot_jar_url": "https://piston-data.mojang.com/v1/objects/6bce4ef400e4efaa63a13d5e6f6b500be969ef81/server.jar"
+    "server_file_url": "https://piston-data.mojang.com/v1/objects/6bce4ef400e4efaa63a13d5e6f6b500be969ef81/server.jar"
     
 };
 
@@ -38,15 +38,7 @@ function run_jar_and_build_server() {
 
     run_command(`mkdir ${__dirname}/notchian/ ${__dirname}/notchian/generated/ ${__dirname}/notchian/generated/data/ ${__dirname}/notchian/generated/data/minecraft`); // creates the folders neceary for the compilation to work properly
     
-    let serverdotjar_https_client = new XMLHTTPR(); // creates a new XML HTTP Client
-        serverdotjar_https_client.open("GET", build_configuration["server_dot_jar_url"], true); // connects itself to Mojang servers to pull the server.jar file
-        serverdotjar_https_client.onload = function() { // when the HTTPS client receives datas
-
-            serverdotjar_data += serverdotjar_https_client.response; // writes the response body
-            
-        };
-
-    fs.writeFileSync(`${build_configuration["folder"]}/notchian/server.jar`, serverdotjar_data, "utf8"); // creates a new file called server.jar and put the content of the server.jar we received from mojang servers
+    run_command(`cd ./notchian/ && wget ${build_configuration["server_file_url"]}`);
     
     run_command(`sudo chmod +x ${__dirname}/extract_registries.sh`); // makes the extract_registries.sh file usable
     run_command(`sudo chmod +x ${__dirname}/build.sh`); // same as for extract_registries.sh
