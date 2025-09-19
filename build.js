@@ -79,11 +79,19 @@ if (String(build_configuration["os"]).toLowerCase() === "centos-old" || String(b
     
 };
 
-if (String(build_configuration["os"]).toLowerCase() === "arch" || String(build_configuration["os"]).toLowerCase() === "msys2") {
+if (String(build_configuration["os"]).toLowerCase() === "arch") {
 
     run_command("sudo pacman update -y && sudo pacman upgrade -y");
     run_command("sudo pacman -S clang jdk-openjdk -y");
     
+    run_jar_and_build_server();
+    
+};
+if (String(build_configuration["os"]).toLowerCase() === "msys2") {
+
+    run_command("sudo pacman update -y && sudo pacman upgrade -y");
+    run_command("sudo pacman -S clang -y");
+
     run_jar_and_build_server();
     
 };
