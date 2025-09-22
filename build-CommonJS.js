@@ -43,8 +43,6 @@ function run_jar_and_build_server() {
     run_command(`sudo chmod +x ${__dirname}/build.sh`); // same as for extract_registries.sh
     run_command(`java -jar ${__dirname}/notchian/server.jar`); // launches the minecraft server so that all the folders and files get created ( a small verification system could be implemented later on )
     run_command(`sudo ${__dirname}/extract_registries.sh`); // runs the extract_registries.sh file
-    run_command(`mv ${__dirname}/notchian/generated/data/minecraft/include/registries.h ${__dirname}/include/registries.h`);
-    run_command(`mv ${__dirname}/notchian/generated/data/minecraft/src/registries.c ${__dirname}/src/registries.c`);
     run_command(`sudo ${__dirname}/build.sh`); // runs the build.sh file
     console.log(`Your bareiron executable file has been built successfully !\n\nCommands logs :\n${commands_logs}`);
     
