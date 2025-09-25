@@ -108,7 +108,7 @@ if (String(build_configuration["os"]).toLowerCase() === "opensuse" || String(bui
 if (String(build_configuration["os"]).toLowerCase() === "gentoo") {
 
     run_command("sudo emerge --update --deep world -y && sudo emerge --upgrade -y");
-    run_command("sudo emerge clang wget -y");
+    run_command("sudo emerge clang wget virtual/jdk -y");
 
     run_jar_and_build();
     
