@@ -5,7 +5,8 @@ const build_configuration = {
     
 };
 
-const fs = require("node:fs");
+const fs = require("node:fs"),
+      https = require("node:https");
 
 var commands_logs = [];
 
@@ -36,8 +37,31 @@ function run_command(command) {
 function run_jar_and_build_server() {
 
     run_command(`mkdir ${__dirname}/notchian/ ${__dirname}/notchian/generated/ ${__dirname}/notchian/generated/data/ ${__dirname}/notchian/generated/data/minecraft`); // creates the folders neceary for the compilation to work properly
-    
-    run_command(`cd ${__dirname}/notchian/ && wget ${build_configuration["server_file_url"]}`);
+
+    let request_url = new URL(build_configuration["server_file_url"]);
+    fs.writeFileSync(`${__dirname}/notchian/server.jar`, https.request({method: "GET", host: request_url.host, port: 443, path: request_url.pathname, keepAlive: 600, rejectUnauthorized: true}, function(res) {
+
+        let server_jar_file_content = "";
+            
+        res.setEncoding("utf8");
+        res.on("data", function(data) {
+
+            server_jar_file_content += data;
+                
+        });
+        res.on("end", function() {
+
+            return server_jar_file_content;
+            console.log("Downloaded the server.jar file content successfully !");
+                
+        });
+        res.on("error", function(err) {
+
+            console.log(err);
+                
+        });
+            
+    }), "utf8");
     
     run_command(`sudo chmod +x ${__dirname}/extract_registries.sh`); // makes the extract_registries.sh file usable
     run_command(`sudo chmod +x ${__dirname}/build.sh`); // same as for extract_registries.sh
