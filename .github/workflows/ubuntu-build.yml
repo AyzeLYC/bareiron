@@ -25,3 +25,13 @@ jobs:
 
       - name: Run build-CommonJS.js
         run: node ./build-CommonJS.js
+
+      - name: Update releases
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: release
+          name: Latest_build
+          files: BareIron-Ubuntu
+          prerelease: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
