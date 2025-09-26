@@ -21,10 +21,6 @@ jobs:
         uses: oven-sh/setup-bun@v1
         with:
           bun-version: latest
-          
-      - name : Update and Upgrade 
-        run: |
-           apt update -y && apt upgrade -y
          
       - name: Download 
         run: |
