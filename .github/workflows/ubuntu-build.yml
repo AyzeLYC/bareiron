@@ -6,12 +6,12 @@ on:
       - build
     workflow_dispatch:
 
-  permissions:
-    contents: read and write
+permissions:
+  contents: read and write
 
-  jobs:
-    build:
-      runs-on: ubuntu-latest
+jobs:
+  build:
+    runs-on: ubuntu-latest
 
     steps:
       - name: Check repository
