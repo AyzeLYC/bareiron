@@ -23,7 +23,8 @@ jobs:
           bun-version: latest
           
       - name : Update and Upgrade
-         run: | apt update -y && apt upgrade -y
+         run: |
+           apt update -y && apt upgrade -y
          
       - name: Download 
         run: |
