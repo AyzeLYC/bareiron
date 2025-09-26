@@ -31,7 +31,7 @@ jobs:
         uses: actions/setup-java@v5
         with:
           distribution: "Oracle"
-          java-version: latest
+          java-version: "21"
 
       - name: Install wget
         uses: wei/wget@v1
