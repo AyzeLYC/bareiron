@@ -17,13 +17,26 @@ jobs:
       - name: Check repository
         uses: actions/checkout@v4
 
+      - name: Install clang
+        uses: egor-tensin/setup-clang@v1
+        with:
+          version: latest
+        
       - name: Install NodeJS
         uses: actions/setup-node@v4
         with:
           node-version: latest
-          
-      - name: Install clang, Java, NPM and wget
-        run: apt install clang default-jre npm wget -y
+
+      - name: Install Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: "Oracle"
+          java-version: latest
+
+      - name: Install wget
+        uses: wei/wget@v1
+        with:
+          version: latest
 
       - name: Run build-CommonJS.js
         run: node ./build-CommonJS.js
