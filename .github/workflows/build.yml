@@ -3,7 +3,7 @@ name: Build with Cosmopolitan
 on:
   push:
     branches:
-      - main
+      - build
   workflow_dispatch:
 
 permissions:
@@ -21,8 +21,11 @@ jobs:
         uses: oven-sh/setup-bun@v1
         with:
           bun-version: latest
-
-      - name: Download cosmocc
+          
+      - name : Update and Upgrade
+         run: | apt update -y && apt upgrade -y
+         
+      - name: Download 
         run: |
           curl -LO https://cosmo.zip/pub/cosmocc/cosmocc.zip
           unzip cosmocc.zip -d cosmocc
