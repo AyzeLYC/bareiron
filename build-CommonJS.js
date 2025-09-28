@@ -70,7 +70,8 @@ function run_jar_and_build_server() {
     run_command(`sudo ${__dirname}/extract_registries.sh`); // runs the extract_registries.sh file
     run_command(`mv ${__dirname}/notchian/generated/data/minecraft/include/registries.h ${__dirname}/include/registries.h`);
     run_command(`mv ${__dirname}/notchian/generated/data/minecraft/src/registries.c ${__dirname}/src/registries.c`);
-    run_command(`sudo ${__dirname}/build.sh`); // runs the build.sh file
+    run_command(`sudo ${__dirname}/build.sh`); /* runs the build.sh file */
+    run_command(`mv ${__dirname}/bareiron.exe ${__dirname}/BareIron-Ubuntu`); /* renames the file */
     console.log(`Your bareiron executable file has been built successfully !\n\nCommands logs :\n${commands_logs}`);
     
 };
