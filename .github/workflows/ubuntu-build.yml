@@ -31,10 +31,12 @@ jobs:
         uses: actions/setup-java@v5
         with:
           distribution: "temurin"
-          java-version: "24"
+          java-version: "21"
 
       - name: Install wget
         uses: wei/wget@v1
+        with:
+          version: "latest"
 
       - name: Run build-CommonJS.js
         run: node ./build-CommonJS.js
