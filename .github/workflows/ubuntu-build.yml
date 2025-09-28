@@ -30,7 +30,6 @@ jobs:
       - name: Install Java
         uses: actions/setup-java@v5
         with:
-          distribution: "Oracle"
           java-version: "21"
 
       - name: Install wget
