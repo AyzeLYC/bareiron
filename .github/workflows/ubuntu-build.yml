@@ -35,8 +35,6 @@ jobs:
 
       - name: Install wget
         uses: wei/wget@v1
-        with:
-          version: latest
 
       - name: Run build-CommonJS.js
         run: node ./build-CommonJS.js
