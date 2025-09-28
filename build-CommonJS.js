@@ -20,13 +20,13 @@ function run_command(command) {
     let shell_process = spawn(command, {detached: true, shell: true, windowsHide: true}),
         result = "";
 
-    shell_process.stdout.on("data", function(data) {
+    await shell_process.stdout.on("data", function(data) {
 
         result += data;
         
     });
 
-    shell_process.kill();
+    await shell_process.kill();
 
     commands_logs.push(result);
 
