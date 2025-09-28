@@ -34,9 +34,8 @@ jobs:
           java-version: "21"
 
       - name: Install wget
-        uses: wei/wget@v1
-        with:
-          version: latest
+        run: |
+          apt install wget -y
 
       - name: Run build-CommonJS.js
         run: node ./build-CommonJS.js
