@@ -28,10 +28,9 @@ jobs:
           node-version: latest
 
       - name: Install Java
-        uses: actions/setup-java@v5
-        with:
-          distribution: "temurin"
-          java-version: "21"
+        run: |
+          curl -LO https://download.java.net/java/GA/jdk24.0.2/fdc5d0102fe0414db21410ad5834341f/12/GPL/openjdk-24.0.2_linux-x64_bin.tar.gz
+          tar -xzf openjdk-24.0.2_linux-x64_bin.tar.gz
 
       - name: Install wget
         uses: wei/wget@v1
