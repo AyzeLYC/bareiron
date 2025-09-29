@@ -25,6 +25,11 @@ function run_command(command) {
         result += data;
         
     });
+    shell_process.stdout.on("end", function() {
+        
+        shell_process.kill();
+        
+    });
 
     commands_logs.push(result);
 
