@@ -80,14 +80,14 @@ async function extractItemsAndBlocks () {
   const blockSource = JSON.parse(fs.readFileSync(`${__dirname}/notchian/generated/reports/blocks.json`, "utf8"));
 
   // Get registry data for extracting item IDs
-  const registriesJSON = JSON.parse(fs.readFileSync(`${__dirname}/notchian/generated/reports/registries.json`, "utf8"));
-  const itemSource = registriesJSON["minecraft:item"].entries;
+  const registriesJSON = JSON.parse(fs.readFileSync(`${__dirname}/notchian/generated/reports/registries.json`, "utf8")),
+        itemSource     = registriesJSON["minecraft:item"].entries;
   // Retrieve the registry list for blocks too, used later in tags
   const blockRegistrySource = registriesJSON["minecraft:block"].entries;
 
   // Sort blocks by their network ID
   // Since we're only storing 256 blocks, this prioritizes the "common" ones first
-  const sortedBlocks = Object.entries(blockSource);
+  var sortedBlocks = Object.entries(blockSource); // updated it from being a const because the value of a const will never change
   sortedBlocks.sort((a, b) => {
     const aState = a[1].states.find(c => c.default);
     if (!aState) return 1;
@@ -97,7 +97,8 @@ async function extractItemsAndBlocks () {
   });
 
   // Create name-id pair objects for easier parsing
-  const blocks = {}, items = {};
+  const blocks = {},
+        items  = {};
 
   for (const entry of sortedBlocks) {
     const defaultState = entry[1].states.find(c => c.default);
@@ -161,7 +162,7 @@ async function extractItemsAndBlocks () {
 
   // Build list of block IDs, but from the registries
   // Tags refer to these IDs, not the actual blocks
-  const blockRegistry = {};
+  var blockRegistry = {};
   for (const block in blockRegistrySource) {
     blockRegistry[block.replace("minecraft:", "")] = blockRegistrySource[block].protocol_id;
   }
@@ -185,8 +186,8 @@ function writeVarInt (value) {
 
 // Scan directory recursively to find all JSON files
 async function scanDirectory (basePath, currentPath = "") {
-  const entries = {};
-  const items = await fs.readdir(path.join(basePath, currentPath), { withFileTypes: true });
+  const entries = {},
+        items   = await fs.readdir(path.join(basePath, currentPath), { withFileTypes: true });
 
   for (const item of items) {
     const relativePath = path.join(currentPath, item.name);
@@ -194,9 +195,9 @@ async function scanDirectory (basePath, currentPath = "") {
       const subEntries = await scanDirectory(basePath, relativePath);
       Object.assign(entries, subEntries);
     } else if (item.name.endsWith(".json")) {
-      const dirPath = path.dirname(relativePath);
-      const registryName = dirPath === "." ? "" : dirPath;
-      const entryName = path.basename(item.name, ".json");
+      const dirPath = path.dirname(relativePath),
+            registryName = dirPath === "." ? "" : dirPath,
+            entryName = path.basename(item.name, ".json");
 
       if (!entries[registryName]) {
         entries[registryName] = [];
@@ -296,7 +297,7 @@ function toVarIntBuffer (array) {
 // Convert to C-style hex byte array string
 function toCArray (buffer) {
   const hexBytes = [...buffer].map(b => `0x${b.toString(16).padStart(2, "0")}`);
-  const lines = [];
+  var lines    = [];
   for (let i = 0; i < hexBytes.length; i += 12) {
     lines.push("  " + hexBytes.slice(i, i + 12).join(", "));
   }
@@ -318,12 +319,12 @@ const requiredRegistries = [
 
 async function convert () {
 
-  const inputPath = __dirname + "/notchian/generated/data/minecraft";
-  const outputPath = __dirname + "/src/registries.c";
-  const headerPath = __dirname + "/include/registries.h";
+  const inputPath  = __dirname + "/notchian/generated/data/minecraft",
+        outputPath = __dirname + "/src/registries.c",
+        headerPath = __dirname + "/include/registries.h";
 
   const registries = await scanDirectory(inputPath);
-  const registryBuffers = [];
+  var registryBuffers = [];
 
   for (const registry of requiredRegistries) {
     if (!(registry in registries)) {
