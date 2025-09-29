@@ -137,7 +137,7 @@ async function extractItemsAndBlocks () {
    * possible. For this, we only include blocks that have corresponding
    * items, outside of some exceptions.
    */
-  const palette = {};
+  var palette = {};
 
   // While we're at it, map block IDs to item IDs
   const mapping = [], mappingWithOverrides = [];
