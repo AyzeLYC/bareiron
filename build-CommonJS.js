@@ -20,7 +20,7 @@ function run_command(command) {
 
         if (err) {
 
-            commands_logs.push(`Error : ${err}`);
+            commands_logs.push(`error : ${err}`);
             
         };
         if (stderr) {
