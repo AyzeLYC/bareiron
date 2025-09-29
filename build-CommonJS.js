@@ -15,24 +15,26 @@ var commands_logs = [];
 **/
 function run_command(command) {
     
-    let { spawn } = require("node:child_process");
-    
-    let shell_process = spawn(command, {detached: true, shell: true, windowsHide: true}),
-        result = "";
+    let {exec} = require("node:child_process");
+    exec(command, function(err, stdout, stderr) {
 
-    shell_process.stdout.on("data", function(data) {
+        if (err) {
 
-        result += data;
+            commands_logs.push(`Error : ${err}`);
+            
+        };
+        if (stderr) {
+
+            commands_logs.push(`std error : ${stderr}`);
+            
+        };
+        if (stdout) {
+
+            commands_logs.push(`std output : ${stdout}`);
+            
+        };
         
     });
-    shell_process.stdout.on("end", function() {
-        
-        shell_process.kill();
-        
-    });
-
-    commands_logs.push(result);
-
     return;
     
 };
