@@ -41,8 +41,8 @@ function run_jar_and_build_server() {
 
     run_command(`mkdir ${__dirname}/notchian/ ${__dirname}/notchian/generated/ ${__dirname}/notchian/generated/data/ ${__dirname}/notchian/generated/data/minecraft`); // creates the folders neceary for the compilation to work properly
 
-    let request_url = new URL(build_configuration["server_file_url"]);
-    /*fs.writeFileSync(`${__dirname}/notchian/server.jar`, https.request({method: "GET", host: request_url.host, port: 443, path: request_url.pathname, keepAlive: 600, rejectUnauthorized: true}, function(res) {
+    /*let request_url = new URL(build_configuration["server_file_url"]);
+    fs.writeFileSync(`${__dirname}/notchian/server.jar`, https.request({method: "GET", host: request_url.host, port: 443, path: request_url.pathname, keepAlive: 600, rejectUnauthorized: true}, function(res) {
 
         let server_jar_file_content = "";
             
