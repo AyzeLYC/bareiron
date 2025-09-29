@@ -26,8 +26,6 @@ function run_command(command) {
         
     });
 
-    shell_process.kill();
-
     commands_logs.push(result);
 
     return;
