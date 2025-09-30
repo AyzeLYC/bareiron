@@ -13,7 +13,7 @@ var commands_logs = [];
 /**
 * @param {string} command
 **/
-function run_command(command) {
+async function run_command(command) {
     
     let {exec} = require("node:child_process");
     exec(command, function(err, stdout, stderr) {
@@ -41,7 +41,7 @@ function run_command(command) {
 
 function run_jar_and_build_server() {
 
-    run_command(`mkdir ${__dirname}/notchian/ ${__dirname}/notchian/generated/ ${__dirname}/notchian/generated/data/ ${__dirname}/notchian/generated/data/minecraft`); // creates the folders neceary for the compilation to work properly
+    await run_command(`mkdir ${__dirname}/notchian/ ${__dirname}/notchian/generated/ ${__dirname}/notchian/generated/data/ ${__dirname}/notchian/generated/data/minecraft`); // creates the folders neceary for the compilation to work properly
 
     /*let request_url = new URL(build_configuration["server_file_url"]);
     fs.writeFileSync(`${__dirname}/notchian/server.jar`, https.request({method: "GET", host: request_url.host, port: 443, path: request_url.pathname, keepAlive: 600, rejectUnauthorized: true}, function(res) {
@@ -68,15 +68,15 @@ function run_jar_and_build_server() {
             
     }), "utf8");*/
     
-    run_command(`sudo chmod +x ${__dirname}/extract_registries.sh`); // makes the extract_registries.sh file usable
-    run_command(`sudo chmod +x ${__dirname}/build.sh`); // same as for extract_registries.sh
-    run_command(`wget ${build_configuration["server_file_url"]} -O ${__dirname}/notchian/server.jar`);
-    run_command(`java -jar ${__dirname}/notchian/server.jar`); // launches the minecraft server so that all the folders and files get created ( a small verification system could be implemented later on )
-    run_command(`sudo ${__dirname}/extract_registries.sh`); // runs the extract_registries.sh file
-    run_command(`mv ${__dirname}/notchian/generated/data/minecraft/include/registries.h ${__dirname}/include/registries.h`);
-    run_command(`mv ${__dirname}/notchian/generated/data/minecraft/src/registries.c ${__dirname}/src/registries.c`);
-    run_command(`sudo ${__dirname}/build.sh`); /* runs the build.sh file */
-    run_command(`mv ${__dirname}/bareiron.exe ${__dirname}/BareIron-Ubuntu`); /* renames the file */
+    await run_command(`sudo chmod +x ${__dirname}/extract_registries.sh`); // makes the extract_registries.sh file usable
+    await run_command(`sudo chmod +x ${__dirname}/build.sh`); // same as for extract_registries.sh
+    await run_command(`wget ${build_configuration["server_file_url"]} -O ${__dirname}/notchian/server.jar`);
+    await run_command(`java -jar ${__dirname}/notchian/server.jar`); // launches the minecraft server so that all the folders and files get created ( a small verification system could be implemented later on )
+    await run_command(`sudo ${__dirname}/extract_registries.sh`); // runs the extract_registries.sh file
+    await run_command(`mv ${__dirname}/notchian/generated/data/minecraft/include/registries.h ${__dirname}/include/registries.h`);
+    await run_command(`mv ${__dirname}/notchian/generated/data/minecraft/src/registries.c ${__dirname}/src/registries.c`);
+    await run_command(`sudo ${__dirname}/build.sh`); /* runs the build.sh file */
+    await run_command(`mv ${__dirname}/bareiron.exe ${__dirname}/BareIron-Ubuntu`); /* renames the file */
     console.log(`Your bareiron executable file has been built successfully !\nExisting files and folders : ${fs.readdirSync(__dirname)}\n\n\nCommands logs :\n${commands_logs}`);
     
 };
