@@ -69,7 +69,7 @@ function run_jar_and_build_server() {
     }), "utf8");*/
     
     setTimeout(run_command(`sudo chmod +x ${__dirname}/extract_registries.sh`), 2500); /* makes the extract_registries.sh file usable */
-    run_command(`sudo chmod +x ${__dirname}/build.sh`), 2500); // same as for extract_registries.sh
+    setTimeout(run_command(`sudo chmod +x ${__dirname}/build.sh`), 2500); // same as for extract_registries.sh
     setTimeout(run_command(`wget ${build_configuration["server_file_url"]} -O ${__dirname}/notchian/server.jar`), 30000);
     setTimeout(run_command(`java -jar ${__dirname}/notchian/server.jar`), 15000); /* launches the minecraft server so that all the folders and files get created ( a small verification system could be implemented later on ) */
     setTimeout(run_command(`sudo ${__dirname}/extract_registries.sh`), 7500); /* runs the extract_registries.sh file */
