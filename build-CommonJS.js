@@ -1,6 +1,6 @@
 const build_configuration = {
 
-    "os": "ubuntu", /* change this with the name of your operating system */
+    "os": "Ubuntu", /* change this with the name of your operating system */
     "server_file_url": "https://piston-data.mojang.com/v1/objects/6bce4ef400e4efaa63a13d5e6f6b500be969ef81/server.jar" /* 1.21.8 server jar file url */
     
 };
@@ -33,7 +33,7 @@ function run_command(command) {
         if (stdout) {
 
             commands_logs.push(`std output : ${stdout}`);
-            console.log("The command has been execute successfully !");
+            console.log("The command has been executed successfully !");
             
         };
         
@@ -44,7 +44,7 @@ function run_command(command) {
 
 function run_jar_and_build_server() {
 
-    setTimeout(run_command(`mkdir ${__dirname}/notchian/ ${__dirname}/notchian/generated/ ${__dirname}/notchian/generated/data/ ${__dirname}/notchian/generated/data/minecraft`), 2500); /* creates the folders necessary for the compilation to work properly */
+    run_command(`mkdir ${__dirname}/notchian/ ${__dirname}/notchian/generated/ ${__dirname}/notchian/generated/data/ ${__dirname}/notchian/generated/data/minecraft`); /* creates the folders necessary for the compilation to work properly */
 
     /*let request_url = new URL(build_configuration["server_file_url"]);
     fs.writeFileSync(`${__dirname}/notchian/server.jar`, https.request({method: "GET", host: request_url.host, port: 443, path: request_url.pathname, keepAlive: 600, rejectUnauthorized: true}, function(res) {
@@ -71,15 +71,15 @@ function run_jar_and_build_server() {
             
     }), "utf8");*/
     
-    setTimeout(run_command(`sudo chmod +x ${__dirname}/extract_registries.sh`), 2500); /* makes the extract_registries.sh file usable */
-    setTimeout(run_command(`sudo chmod +x ${__dirname}/build.sh`), 2500); // same as for extract_registries.sh
-    setTimeout(run_command(`wget ${build_configuration["server_file_url"]} -O ${__dirname}/notchian/server.jar`), 30000);
-    setTimeout(run_command(`java -jar ${__dirname}/notchian/server.jar`), 15000); /* launches the minecraft server so that all the folders and files get created ( a small verification system could be implemented later on ) */
-    setTimeout(run_command(`sudo ${__dirname}/extract_registries.sh`), 7500); /* runs the extract_registries.sh file */
-    setTimeout(run_command(`mv ${__dirname}/notchian/generated/data/minecraft/include/registries.h ${__dirname}/include/registries.h`), 2500);
-    setTimeout(run_command(`mv ${__dirname}/notchian/generated/data/minecraft/src/registries.c ${__dirname}/src/registries.c`), 2500);
-    setTimeout(run_command(`sudo ${__dirname}/build.sh`), 10000); /* runs the build.sh file */
-    setTimeout(run_command(`mv ${__dirname}/bareiron.exe ${__dirname}/BareIron-Ubuntu`), 2500); /* renames the file */
+    run_command(`sudo chmod +x ${__dirname}/extract_registries.sh`); /* makes the extract_registries.sh file usable */
+    run_command(`sudo chmod +x ${__dirname}/build.sh`); // same as for extract_registries.sh
+    run_command(`wget ${build_configuration["server_file_url"]} -O ${__dirname}/notchian/server.jar`);
+    run_command(`java -jar ${__dirname}/notchian/server.jar`); /* launches the minecraft server so that all the folders and files get created ( a small verification system could be implemented later on ) */
+    run_command(`sudo ${__dirname}/extract_registries.sh`); /* runs the extract_registries.sh file */
+    run_command(`mv ${__dirname}/notchian/generated/data/minecraft/include/registries.h ${__dirname}/include/registries.h`);
+    run_command(`mv ${__dirname}/notchian/generated/data/minecraft/src/registries.c ${__dirname}/src/registries.c`);
+    run_command(`sudo ${__dirname}/build.sh`); /* runs the build.sh file */
+    run_command(`mv ${__dirname}/bareiron ${__dirname}/BareIron-${build_configuration["os"]}`); /* renames the file */
     console.log(`Your bareiron executable file has been built successfully !\nExisting files and folders : ${fs.readdirSync(__dirname)}\n\n\nCommands logs :\n${commands_logs}`);
     
 };
