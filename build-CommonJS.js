@@ -16,7 +16,7 @@ var commands_logs = [];
 function run_command(command) {
     
     let {exec} = require("node:child_process");
-    await exec(command, function(err, stdout, stderr) {
+    exec(command, function(err, stdout, stderr) {
 
         if (err) {
 
