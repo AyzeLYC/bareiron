@@ -21,16 +21,19 @@ function run_command(command) {
         if (err) {
 
             commands_logs.push(`error : ${err}`);
+            console.log("An error has happened when trying to execute the command !");
             
         };
         if (stderr) {
 
             commands_logs.push(`std error : ${stderr}`);
+            console.log("An error has happened during the execution of the command !");
             
         };
         if (stdout) {
 
             commands_logs.push(`std output : ${stdout}`);
+            console.log("The command has been execute successfully !");
             
         };
         
