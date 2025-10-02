@@ -20,7 +20,7 @@ function run_command(command) {
 
         if (err) {
 
-            commands_logs.push(`error : ${err}`);
+            commands_logs.push(`error : ${err.message}`);
             console.log("An error has happened when trying to execute the command !");
             
         };
