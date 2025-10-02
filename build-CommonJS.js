@@ -19,7 +19,7 @@ function run_command(command) {
 
     let commands = String(command).
     
-    let process = spawn("", []);
+    let process = spawn(command.split(" ")[0], command.split(" ")[1 : (command.length() - 1)]);
         process.stdout.on("data", function(data) {
 
             commands_logs.push(`${command} result :\n${data}`);
@@ -33,6 +33,25 @@ function run_command(command) {
         process.on("error", function(err) {
 
             commands_logs.push(`An error has happened before trying to use the ${command} command !\n${err.message}`);
+            
+        });
+        process.on("exit", function(code, signal) {
+
+            if (code) {
+                
+                commands_logs.push(`${command} command process exited, outputing the code : ${code}`);
+
+            };
+            if (signal) {
+
+                commands_logs.push(`${command} command process was killed, outputing the signal : ${signal}`);
+                
+            };
+            if (!code && !signal) {
+
+                commands_logs.push(`${command} has been executed successfully !`);
+                
+            };
             
         });
     
