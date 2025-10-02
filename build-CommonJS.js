@@ -15,30 +15,26 @@ var commands_logs = [];
 **/
 function run_command(command) {
     
-    let {exec} = require("node:child_process");
-    exec(command, function(err, stdout, stderr) {
+    let {spawn} = require("node:child_process");
 
-        if (err) {
+    let commands = String(command).
+    
+    let process = spawn("", []);
+        process.stdout.on("data", function(data) {
 
-            commands_logs.push(`error : ${err.message}`);
-            console.log("An error has happened when trying to execute the command !");
-            
-        };
-        if (stderr) {
-
-            commands_logs.push(`std error : ${stderr}`);
-            console.log("An error has happened during the execution of the command !");
-            
-        };
-        if (stdout) {
-
-            commands_logs.push(`std output : ${stdout}`);
-            console.log("The command has been executed successfully !");
-            
-        };
+            commands_logs.push(`${command} result :\n${data}`);
         
-    });
-    return;
+        });
+        process.stdout.on("data", function(data) {
+
+            commands_logs.push(`An error has happened while trying to use the ${command} command !\n${data}`);
+            
+        });
+        process.on("error", function(err) {
+
+            commands_logs.push(`An error has happened before trying to use the ${command} command !\n${err.message}`);
+            
+        });
     
 };
 
