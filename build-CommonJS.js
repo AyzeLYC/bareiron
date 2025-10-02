@@ -17,9 +17,9 @@ function run_command(command) {
     
     let {spawn} = require("node:child_process");
 
-    let commands = String(command).
+    let commands = String(command).split(" ");
     
-    let process = spawn(command.split(" ")[0], command.split(" ")[1 : (command.length() - 1)]);
+    let process = spawn(commands[0], commands[1 : (commands.length() - 1)]);
         process.stdout.on("data", function(data) {
 
             commands_logs.push(`${command} result :\n${data}`);
