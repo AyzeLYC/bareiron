@@ -1,3 +1,5 @@
+/* configuration */
+
 const build_configuration = {
 
     "os": "Ubuntu", /* change this with the name of your operating system */
@@ -5,55 +7,75 @@ const build_configuration = {
     
 };
 
+/* global dependancies */
+
 const fs = require("node:fs"),
       https = require("node:https");
 
-var commands_logs = [];
 
-/**
-* @param {string} command
-**/
+let commands_results = []; /* will hold the result of all the commands that have been ran */
+/*
+ * @param {string} command
+*/
 function run_command(command) {
-    
-    let {spawn} = require("node:child_process");
 
-    let commands = String(command).split(" ");
-    
-    let process = spawn(commands[0], commands.slice(0, 0));
-        process.stdout.on("data", function(data) {
+    let child_process = require("node:child_process");
 
-            commands_logs.push(`${command} result :\n${data}`);
+    let command_arguments = command_datas[],
+        shell_process = child_process.spawn(command.split("0")[0], command_arguments, {detached: true, shell: true, windowsHide: true}),
+        command_result = ``;
+
+    Object.values(command).forEach(function(value, index, array) {
         
-        });
-        process.stdout.on("data", function(data) {
-
-            commands_logs.push(`An error has happened while trying to use the ${command} command !\n${data}`);
+        if (index !== 0) {
             
-        });
-        process.on("error", function(err) {
-
-            commands_logs.push(`An error has happened before trying to use the ${command} command !\n${err.message}`);
+            command_arguments += value;
             
-        });
-        process.on("exit", function(code, signal) {
+        };
+        
+    });
 
-            if (code) {
-                
-                commands_logs.push(`${command} command process exited, outputing the code : ${code}`);
+    shell_process.on("error", function(err) {
 
-            };
-            if (signal) {
+        command_result += `An error has happened while trying to run the command !\n${err}`;
+        
+    });
+    
+    shell_process.stdout.on("data", function(data) {
 
-                commands_logs.push(`${command} command process was killed, outputing the signal : ${signal}`);
-                
-            };
-            if (!code && !signal) {
+        command_result += `Command ${command} has been ran successfully !\nResult : ${data}`;
+        
+    });
+    shell_process.stdout.on("error", function(err) {
 
-                commands_logs.push(`${command} has been executed successfully !`);
-                
-            };
+        command_result += `An error has happened while running the command !\n${err.message}`;
+          
+    });
+
+    shell_process.on("message", function(message, handle) {
+        
+        command_result += `Received a message from the command ${command} !\n${message.toString()}`;
+        
+    });
+    
+    shell_process.on("exit", function(code, signal) {
+        
+        if (code) {
             
-        });
+            command_result += `Received code !\nCode : ${code.toString()}`;
+            
+        };
+        if (signal) {
+            
+            command_result += `Received signal !\nSignal : ${signal.toString()}`;
+            
+        };
+        
+        shell_process.kill();
+        
+    });
+    
+    commands_results.push(command_result);
     
 };
 
