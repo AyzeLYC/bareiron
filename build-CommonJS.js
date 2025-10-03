@@ -21,7 +21,7 @@ function run_command(command) {
 
     let child_process = require("node:child_process");
 
-    let command_arguments = command_datas[],
+    let command_arguments = [],
         shell_process = child_process.spawn(command.split(" ")[0], command_arguments, {detached: true, shell: true, windowsHide: true}),
         command_result = ``;
 
@@ -29,7 +29,7 @@ function run_command(command) {
         
         if (index !== 0) {
             
-            command_arguments += value;
+            command_arguments.push(value);
             
         };
         
